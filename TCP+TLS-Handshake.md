@@ -1,5 +1,24 @@
 # End-to-End TCP Three-Way Handshake and TLS 1.3 Handshake Architecture
 
+## Table of Contents
+
+1. [Overview](#1-overview)
+2. [Complete End-to-End Sequence Diagram](#2-complete-end-to-end-sequence-diagram)
+3. [TCP Three-Way Handshake](#3-tcp-three-way-handshake)
+4. [TLS Architecture](#4-tls-architecture)
+5. [Certificates and Certificate Authorities](#5-certificates-and-certificate-authorities)
+6. [Complete TLS 1.3 Handshake](#6-complete-tls-13-handshake)
+7. [TLS Record Layer and HTTP Data Protection](#7-tls-record-layer-and-http-data-protection)
+8. [TCP and TLS Handshake Comparison](#8-tcp-and-tls-handshake-comparison)
+9. [TLS 1.2 Versus TLS 1.3](#9-tls-12-versus-tls-13)
+10. [Forward Secrecy](#10-forward-secrecy)
+11. [Azure and .NET Architecture](#11-azure-and-net-architecture)
+12. [Troubleshooting TCP and TLS](#12-troubleshooting-tcp-and-tls)
+13. [Important Questions and Answers](#13-Important-questions-and-answers)
+14. [Final End-to-End Architecture Flow](#14-final-end-to-end-architecture-flow)
+
+---
+
 ## 1. Overview
 
 When a client application, such as a .NET application using `HttpClient`, calls an HTTPS API, two major protocols work together:
@@ -105,7 +124,7 @@ sequenceDiagram
     Note over C: Validate certificate chain, hostname, signature and Finished
 
     C->>S: Client Finished
-    Note over C,S: Handshake complete; application traffic keys are used
+    Note over C,S: Handshake complete - application traffic keys are used
 
     Note over C,API: Phase 3 - Secure Application Traffic
     C->>S: Encrypted HTTP request in TLS records
@@ -300,7 +319,7 @@ Private Key:
 
 Common examples include RSA and elliptic-curve cryptography.
 
-**TLS 1.3 important point:** A typical TLS 1.3 handshake does not encrypt the entire HTTP request with the server's RSA public key. It generally uses ephemeral Diffie–Hellman key agreement, followed by symmetric encryption using derived traffic keys.
+**TLS 1.3 Important point:** A typical TLS 1.3 handshake does not encrypt the entire HTTP request with the server's RSA public key. It generally uses ephemeral Diffie–Hellman key agreement, followed by symmetric encryption using derived traffic keys.
 
 ### B. Symmetric encryption
 
@@ -863,12 +882,12 @@ In a cloud architecture, TLS may terminate at a gateway, load balancer, reverse 
 
 ```mermaid
 flowchart TD
-    A[.NET Client] -->|HTTPS / TLS Session 1| B[Azure Front Door or Application Gateway]
-    B --> C{Backend connection}
-    C -->|HTTPS / TLS Session 2| D[ASP.NET Core / Kestrel]
-    C -->|HTTP, only if explicitly configured| E[Backend HTTP Endpoint]
-    D --> F[Business Logic]
-    F --> G[Database or Downstream Services]
+    A[".NET Client"] -->|"HTTPS / TLS Session 1"| B["Azure Front Door or Application Gateway"]
+    B --> C{"Backend connection"}
+    C -->|"HTTPS / TLS Session 2"| D["ASP.NET Core / Kestrel"]
+    C -->|"HTTP, only if explicitly configured"| E["Backend HTTP Endpoint"]
+    D --> F["Business Logic"]
+    F --> G["Database or Downstream Services"]
 ```
 
 The frontend and backend TLS connections, when both used, are separate cryptographic sessions.
@@ -1000,7 +1019,7 @@ If a TLS issue occurs only in one environment, compare the runtime, operating sy
 
 ---
 
-# 13. important Questions and Answers
+# 13. Important Questions and Answers
 
 ## Q1. Why do we need TCP before TLS?
 
@@ -1158,6 +1177,7 @@ END
 ```
 
 ---
+
 ## Official Reference
 
 - [RFC 8446 — The Transport Layer Security (TLS) Protocol Version 1.3](https://www.rfc-editor.org/rfc/rfc8446.html)
